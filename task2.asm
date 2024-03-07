@@ -1,10 +1,14 @@
-.include "lib1.asm"
+.include "lib_core.asm"
 
 main:
-    li s1 '\n'
     readch
-    beq a0, s1, main_exit
+    li t0 '\n'
+    beq a0, t0, exit
+    addi s1, a0, 1
+    printch
+    mv a0, s1
     printch
     j main
-main_exit:
-    exit
+
+exit:
+    exit 0
