@@ -50,3 +50,17 @@ _start:
     lw %rd2, 4(sp)
     addi sp, sp, 8
 .end_macro
+
+.macro push3 %rs1, %rs2, %rs3
+    addi sp, sp, -12
+    sw %rs1, 0(sp)
+    sw %rs2, 4(sp)
+    sw %rs3, 8(sp)
+.end_macro
+
+.macro pop3 %rd1, %rd2, %rd3
+    lw %rd1, 0(sp)
+    lw %rd2, 4(sp)
+    lw %rd3, 8(sp)
+    addi sp, sp, 12
+.end_macro
