@@ -23,8 +23,10 @@ _start:
     .data
     error_msg:
     .string %msg
+    .text
     la a0, error_msg
     syscall 4
+    exit 1
 .end_macro
 
 .macro push %rs
@@ -44,7 +46,7 @@ _start:
 .end_macro
 
 .macro pop2 %rd1, %rd2
-    sw %rd1, 0(sp)
-    sw %rd2, 4(sp)
+    lw %rd1, 0(sp)
+    lw %rd2, 4(sp)
     addi sp, sp, 8
 .end_macro
