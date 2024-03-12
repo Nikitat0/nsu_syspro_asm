@@ -10,6 +10,8 @@ main_add:
     slt t1, a0, s1
     sub t0, t0, t1
     bnez t0, main_overflow
+    li t0, -2147483647 # -(2^31 - 1)
+    blt a0, t0, main_overflow
     call print_number
     exit 0
 main:
