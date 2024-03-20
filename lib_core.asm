@@ -64,3 +64,21 @@ _start:
     lw %rd3, 8(sp)
     addi sp, sp, 12
 .end_macro
+
+.macro swap %r1, %r2
+    xor %r1, %r1, %r2
+    xor %r2, %r1, %r2
+    xor %r1, %r1, %r2
+.end_macro
+
+.eqv scratch a7
+
+.macro _beqi %rs, %imm, %label
+    li scratch, %imm
+    beq %rs, scratch, %label
+.end_macro
+
+.macro _bnei %rs, %imm, %label
+    li scratch, %imm
+    bne %rs, scratch, %label
+.end_macro
