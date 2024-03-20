@@ -51,6 +51,7 @@ bcd_add: # bcd_t bcd_add(bcd_t lhs, bcd_t rhs)
     slli a0, a0, 4
     or a0, a0, s1
 bcd_add_1:
+    ori a0, a0, 10
     pop2 ra, s1
     ret
 
@@ -66,9 +67,8 @@ ubcd_add_1:
     sltiu t1, t0, 10
     addi t1, t1, -1
     andi a4, t1, 1
-    andi t1, t1, 6
+    andi t1, t1, -10
     add t0, t0, t1
-    andi t0, t0, 0xf
     sll t0, t0, a3
     or a2, a2, t0
     srli a0, a0, 4

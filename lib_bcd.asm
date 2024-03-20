@@ -13,7 +13,7 @@ from_bcd_digit_error:
 
 normalize_bcd: # int normalize_bcd(int bcd)
     srli t0, a0, 4
-    sltiu t0, t0, 1
+    seqz t0, t0
     not t0, t0
     and a0, a0, t0
     ret
@@ -24,7 +24,7 @@ scan_bcd_number: # int scan_bcd_number()
     li s2, 0xa
     readch
     xori t0, a0, '-'
-    sltiu t0, t0, 1
+    seqz t0, t0
     add s2, s2, t0
     beqz t0, scan_bcd_number_1
     readch
