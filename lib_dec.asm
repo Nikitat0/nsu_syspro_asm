@@ -1,11 +1,11 @@
 .macro to_digit %rd, %rs
-    addi a0, a0, '0'
+    addi %rd, %rs, '0'
 .end_macro
 
-.macro mul10 %rd, %rs # caller-saved: t0
-    add t0, %rs, %rs
+.macro mul10 %rd, %rs
+    add scratch, %rs, %rs
     slli %rd, %rs, 3
-    add %rd, %rd, t0
+    add %rd, %rd, scratch
 .end_macro
 
 .text
@@ -22,13 +22,12 @@ div10: # int div10(unsigned int x)
     bne zero, t0, div10_lt_10
     push2 ra, s1
     mv s1, a0
-    srli a0, a0, 1
+    srli a0, a0, 2
     call div10
-    srli a1, s1, 2
-    sub a0, a1, a0
-    srli a0, a0, 1
-    mul10 a2, a0
-    sltu t0, s1, a2
+    srli t0, s1, 3
+    sub a0, t0, a0
+    mul10 t0, a0
+    sltu t0, s1, t0
     sub a0, a0, t0
     pop2 ra, s1
     ret
