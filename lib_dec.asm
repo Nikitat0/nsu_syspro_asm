@@ -80,11 +80,11 @@ print_number: # void print_number(int n)
     neg a0, s1
 print_number_1:
     mv s1, a0
-    call mod10
-    to_digit a0, a0
-    push a0
-    mv a0, s1
     call div10
+    mul10 t0, a0
+    sub t0, s1, t0
+    to_digit t0, t0
+    push t0
     bne zero, a0, print_number_1
 print_number_2:
     pop a0
