@@ -26,6 +26,8 @@ _start:
     .text
     la a0, error_msg
     syscall 4
+    li a0, 0xa
+    printch
     exit 1
 .end_macro
 
