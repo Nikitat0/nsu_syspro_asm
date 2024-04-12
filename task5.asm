@@ -1,14 +1,14 @@
 .include "lib_core.asm"
 .include "lib_dec.asm"
-.include "lib_mul.asm"
+.include "lib_math.asm"
 
 .text
 main:
-    call read_number
+    call scan_number
     mv s1, a0
-    call read_number
+    call scan_number
     mv a1, a0
     mv a0, s1
-    call mul
+    call umul
     call print_number
     exit 0
