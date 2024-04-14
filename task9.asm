@@ -10,5 +10,5 @@ main:
     call scan_number
     mv a1, a0
     mv a0, s1
-    call udiv
+    call sdiv
     call print_number

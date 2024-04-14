@@ -16,7 +16,7 @@ umul_1:
     mv a0, t1
     ret
 
-udiv: # unsigned int udiv(unsigned int a, unsigned int b)
+udiv: # (unsigned int, unsigned int) udiv(unsigned int a, unsigned int b)
     beqz a1, zero_division_error
     li a2, 0
     li a3, 33
@@ -36,8 +36,34 @@ udiv_2:
     and t0, t0, t1
     sub a0, a0, t0
     bnez a3, udiv_2
+    mv a1, a0
     mv a0, a2
     ret
 zero_division_error:
     error "Zero division error"
 
+sdiv: # int sdiv(int a, int b)
+    push2 ra, s1
+    slt t0, a0, zero
+    slt t1, a1, zero
+    xor s1, t0, t1
+
+    addi t0, t0, -1
+    add t3, a0, a0
+    and t3, t0, t3
+    sub a0, t3, a0
+
+    addi t1, t1, -1
+    add t3, a1, a1
+    and t3, t1, t3
+    sub a1, t3, a1
+
+    call udiv
+    snez a1, a1
+    addi s1, s1, -1
+    add t0, a0, a0
+    and t0, s1, t0
+    add a0, a0, a1
+    sub a0, t0, a0
+    pop2 ra, s1
+ret
