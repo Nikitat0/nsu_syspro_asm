@@ -67,3 +67,26 @@ sdiv: # int sdiv(int a, int b)
     sub a0, t0, a0
     pop2 ra, s1
 ret
+
+usqrt: # unsigned int usqrt(unsigned int x)
+    li a1, 0
+    li a2, 0
+    li a3, 16
+usqrt_1:
+    addi a3, a3, -1
+    slli a2, a2, 2
+    srli t0, a0, 30
+    or a2, a2, t0
+    slli a0, a0, 2
+    slli a1, a1, 1
+    slli t0, a1, 1
+    addi t0, t0, 1
+    sltu t1, a2, t0
+    xori t1, t1, 1
+    xor a1, a1, t1
+    neg t1, t1
+    and t0, t0, t1
+    sub a2, a2, t0
+    bnez a3, usqrt_1
+    mv a0, a1
+ret
