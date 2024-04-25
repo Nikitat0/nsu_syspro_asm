@@ -1,5 +1,3 @@
-default rel
-
 section .text
 extern fopen
 extern flength

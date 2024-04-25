@@ -1,7 +1,4 @@
-default rel
-
 section .text
-extern error
 extern close
 extern lseek
 extern open
