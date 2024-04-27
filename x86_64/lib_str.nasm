@@ -1,7 +1,4 @@
-section .text
-
-global atou ; uint64_t atou(const char *)
-atou:
+func atou ; uint64_t atou(const char *)
     mov cl, byte [rdi]
     test cl, cl
     jz .on_empty
@@ -25,8 +22,7 @@ atou:
     .on_unexpected error "atoi: Unexpected character"
     .on_overflow error "atoi: Overflow"
 
-global strchr ; char* strchr(char* str, char ch)
-strchr:
+func strchr ; char* strchr(char* str, char ch)
     .loop:
     movzx eax, byte [rdi]
     cmp eax, esi

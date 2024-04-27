@@ -1,4 +1,3 @@
-section .text
 extern close
 extern lseek
 extern open
@@ -10,24 +9,21 @@ O_RDONLY equ 0
 O_WRONLY equ 1
 O_RDWR equ 2
 
-global fopen ; int fopen(const char *path, int mode)
-fopen:
+func fopen ; int fopen(const char *path, int mode)
     call open wrt ..plt
     test eax, eax
     js .err
     ret
     .err perror "fopen"
 
-global fread ; int fread(int fd, void *buf, size_t nbyte)
-fread:
+func fread ; int fread(int fd, void *buf, size_t nbyte)
     call read wrt ..plt
     cmp eax, -1
     jz .err
     ret
     .err perror "fread"
 
-global fwrite ; int fwrite(int fd, void *buf, size_t nbyte)
-fwrite:
+func fwrite ; int fwrite(int fd, void *buf, size_t nbyte)
     call write wrt ..plt
     cmp eax, -1
     jz .err
@@ -39,24 +35,21 @@ SEEK_SET equ 0
 SEEK_CUR equ 1
 SEEK_END equ 2
 
-global fseek ; int fwrite(int fd, int offset, int whence)
-fseek:
+func fseek ; int fwrite(int fd, int offset, int whence)
     call lseek wrt ..plt
     cmp eax, -1
     jz .err
     ret
     .err perror "fseek"
 
-global fclose ; void close(int fd)
-fclose:
+func fclose ; void close(int fd)
     call close wrt ..plt
     test eax, eax
     jnz .err
     ret
     .err perror "fclose"
 
-global flength ; size_t flength(int fd)
-flength:
+func flength ; size_t flength(int fd)
     push rdi
     xor rsi, rsi
     mov rdx, SEEK_SET

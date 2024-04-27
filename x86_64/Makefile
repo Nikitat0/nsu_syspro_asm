@@ -24,7 +24,8 @@ $(LIB): build/%.o:%.nasm $(INCLUDES) | build
 
 $(TEST): build/%:%.nasm $(LIB) $(INCLUDES) | build
 	nasm -f elf64 $(INCLUDES:%=-p %) -Ox -o $@.o $<
-	gcc -lc -o $@ $@.o $(LIB)
+	ld -r -e --gc-sections -e main -o $@.pre $@.o $(LIB)
+	gcc -lc -o $@ $@.pre
 
 $(PASSED): %.passed:% | build
 	@./$<
@@ -32,4 +33,5 @@ $(PASSED): %.passed:% | build
 
 $(BIN): build/%:%.nasm $(LIB) $(INCLUDES) | build
 	nasm -f elf64 $(INCLUDES:%=-p %) -Ox -o $@.o $<
-	gcc -lc -o $@ $@.o $(LIB)
+	ld -r -e --gc-sections -e main -o $@.pre $@.o $(LIB)
+	gcc -lc -o $@ $@.pre

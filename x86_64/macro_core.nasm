@@ -1,5 +1,11 @@
 default rel
 
+%macro func 1
+    section .text.%[%1] progbits alloc exec nowrite align=16 
+    global %1
+    %1:
+%endmacro
+
 %macro __string 1-*
     [section .rodata]
     %1 db %{2:-1}, 0

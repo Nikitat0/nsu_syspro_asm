@@ -1,29 +1,24 @@
-section .text
 extern printf
 
-global print_int ; void print_int(int n)
-print_int:
+func print_int ; void print_int(int n)
     mov rsi, rdi
     lea rdi, [print_int_fmt]
     xor eax, eax
     jmp printf wrt ..plt
 
-global print_string ; void print_string(const char *str)
-print_string:
+func print_string ; void print_string(const char *str)
     mov rsi, rdi
     lea rdi, [print_string_fmt]
     xor eax, eax
     jmp printf wrt ..plt
 
-global print_char ; void print_char(char c)
-print_char:
+func print_char ; void print_char(char c)
     mov rsi, rdi
     lea rdi, [print_char_fmt]
     xor eax, eax
     jmp printf wrt ..plt
 
-global print_newline ; void print_newline()
-print_newline:
+func print_newline ; void print_newline()
     mov edi, 10
     jmp print_char
 
