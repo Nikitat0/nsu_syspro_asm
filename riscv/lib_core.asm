@@ -67,6 +67,22 @@ _start:
     addi sp, sp, 12
 .end_macro
 
+.macro push4 %rs1, %rs2, %rs3, %rs4
+    addi sp, sp, -16
+    sw %rs1, 0(sp)
+    sw %rs2, 4(sp)
+    sw %rs3, 8(sp)
+    sw %rs4, 12(sp)
+.end_macro
+
+.macro pop4 %rd1, %rd2, %rd3, %rd4
+    lw %rd1, 0(sp)
+    lw %rd2, 4(sp)
+    lw %rd3, 8(sp)
+    lw %rd4, 12(sp)
+    addi sp, sp, 16
+.end_macro
+
 .macro swap %r1, %r2
     xor %r1, %r1, %r2
     xor %r2, %r1, %r2

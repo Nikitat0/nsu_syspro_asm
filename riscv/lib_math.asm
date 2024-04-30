@@ -90,3 +90,34 @@ usqrt_1:
     bnez a3, usqrt_1
     mv a0, a1
 ret
+
+ucbrt: # unsigned int ucbrt(unsigned int x)
+    push4 ra, s1, s2, s3
+    mv s1, a0
+
+    srli t0, s1, 30
+    snez s2, t0
+    slli t0, s2, 30
+    sub s1, s1, t0
+
+    li s3, 30 # int iterations
+ucbrt_1:
+    addi s3, s3, -3
+    mv a0, s2
+    slli s2, s2, 1
+    add a0, s2, a0
+    addi a1, s2, 1
+    call umul
+    slli a0, a0, 1
+    addi a0, a0, 1
+    sll a0, a0, s3
+    sltu t0, s1, a0
+    xori t0, t0, 1
+    or s2, s2, t0
+    neg t0, t0
+    and a0, a0, t0
+    sub s1, s1, a0
+    bnez s3, ucbrt_1
+    mv a0, s2
+    pop4 ra, s1, s2, s3
+ret
