@@ -3,6 +3,7 @@ extern atou
 extern dalloc
 extern fopen
 extern flength
+extern fload
 extern fread
 extern fclose
 extern O_RDONLY
@@ -10,101 +11,72 @@ extern print_char
 extern print_int
 extern print_newline
 extern print_string
+extern splitlines
 
 global main
 main:
     cmp rdi, 3
     ja .print_usage
+    cmp rdi, 2
+    jb .print_usage
 
     push rbx
+    push r12
     push rbp
     mov rbp, rsp
-    sub rsp, 8 * 2
+    
+    mov rax, [rsi + 8]
+    mov rbx, rax ; rbx: char *path
 
-    mov rdx, [rsi + 8]
-    mov [rbp - 8], rdx
-    ; [rbp - 8]: const char *path
-
-    mov qword [rbp - 16], -1
+    xor r12, r12
+    dec r12
     cmp rdi, 2
-    jz .skip_2nd_arg
+    je .no_2nd_arg
     mov rdi, [rsi + 16]
     call atou
-    mov [rbp - 16], rax
-    test rax, rax
-    jz .skip
-    .skip_2nd_arg:
-    ; [rbp - 16]: size_t n;
+    mov r12, rax
+    .no_2nd_arg:
+    ; r12: size_t n
 
-    mov rdi, [rbp - 8]
+    mov rdi, rbx
     mov rsi, O_RDONLY
     call fopen
-    mov [rbp - 8], rax
-    ; [rbp - 8]: int fd;
-
+    mov rbx, rax ; rbx: int fd
     mov rdi, rax
-    call flength
-    mov rbx, rax
-
-    lea rdi, [rbx + 1]
-    call dalloc
-    lea rdi, [rax + rbx + 1]
-    mov byte [rdi], 10
-
-    mov rdi, [rbp - 8]
-    mov rsi, rax
-    mov rdx, rbx
-    mov rbx, rax
-    call fread
-
-    xor rcx, rcx
-
-    .loop_nl:
-    mov al, [rbx]
-    test al, al
-    jz .eof
-
-    push rbx
-    inc rcx
-    .loop:
-    inc rbx
-    mov al, [rbx - 1]
-    test al, al
-    jz .eof
-    cmp al, 10
-    jnz .loop
-    mov byte [rbx - 1], 0
-    jmp .loop_nl
-
-    .eof:
-    mov rbx, rcx
-    mov rdi, [rbp - 8]
+    call fload
+    mov rdi, rbx
+    mov rbx, rax ; rbx: char *content
     call fclose
 
-    mov rax, [rbp - 16]
-    cmp rax, rbx
-    cmova rax, rbx
-    mov [rbp - 16], rbx
-    sub [rbp - 16], rax
-    lea rbx, [rsp + 8 * rax]
-    ; [rbp - 16]: size_t strn
+    mov rdi, rbx
+    lea rsi, [rsp - 16]
+    mov rsp, rsi
+    call splitlines
+    mov rbx, rax ; rbx: char *lines[]
+    mov rdi, [rsp]
+    mov [rsp], r13
+    mov r13, rdi
+    sub rdi, r12
+    mov r12, 0
+    cmovns r12, rdi
 
-    .loop2:
-    sub rbx, 8
-    inc qword [rbp - 16]
-    mov rdi, [rbp - 16]
+    jmp .loop_begin
+    .loop:
+    call print_char
+    mov rdi, r12
     call print_int
     mov edi, ' '
     call print_char
-    mov rdi, [rbx]
+    mov rdi, [rbx + 8 * r12]
     call print_string
     call print_newline
-    cmp rsp, rbx
-    jnz .loop2
+    inc r12
+    .loop_begin:
+    cmp r12, r13
+    jne .loop
 
-    .skip:
-    xor eax, eax
     leave
+    pop r12
     pop rbx
     ret
     .print_usage: lea rdi, [usage]

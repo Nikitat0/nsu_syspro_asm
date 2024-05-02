@@ -1,4 +1,5 @@
 extern close
+extern dalloc
 extern lseek
 extern open
 extern read
@@ -64,6 +65,23 @@ func flength ; size_t flength(int fd)
     mov rsi, [rsp + 8]
     mov rdx, SEEK_SET
     call fseek
+    pop rax
+    add rsp, 16
+    ret
+
+func fload ; char *fload(int fd)
+    push rdi ; [rsp + 8]: int fd
+    sub rsp, 16
+    call flength
+    mov [rsp], rax ; [rsp]: size_t len
+    lea rdi, [rax + 1]
+    call dalloc
+    mov rdi, [rsp + 16]
+    mov rsi, rax
+    mov rdx, [rsp]
+    mov byte [rsi + rdx + 1], 0
+    mov [rsp], rsi
+    call fread
     pop rax
     add rsp, 16
     ret

@@ -1,17 +1,26 @@
+; Begin test set
 %macro TEST 0
-    %push test
+    extern print_char
+    extern print_int
+    extern print_newline
+    extern print_string
+
+    %push test_set
     push rbx
     push rbx
     xor rbx, rbx
 %endmacro
 
+; Begin function test
 %macro FUNC 1
+    extern print_char
+    extern print_int
+    extern print_newline
+    extern print_string
+
     %push func_test
     %define %$func %1
     __string %$func_name, %str(%1)
-
-    extern print_int
-    extern print_string
 
     push r12
     push r13
@@ -35,91 +44,22 @@
     __string %%testing_2, "...", 10
 %endmacro
 
-%macro __PREPARE_ARG 2
-    %ifstr %2
-        __string %%arg, %2
-        lea %1, [%%arg]
-    %elifid %2
-        lea %1, [%2]
-    %else
-        mov %1, %2
-    %endif
-%endmacro
-
-%macro __PREPARE_TEST_CALL 0-*
-    %if %0 > 6
-        %fatal "More than 6 arguments are not supported in test"
-    %endif
-    %if %0 >= 1
-        __PREPARE_ARG rdi, %1
-    %endif
-    %if %0 >= 2
-        __PREPARE_ARG rsi, %2
-    %endif
-    %if %0 >= 3
-        __PREPARE_ARG rdx, %3
-    %endif
-    %if %0 >= 4
-        __PREPARE_ARG rcx, %4
-    %endif
-    %if %0 >= 5
-        __PREPARE_ARG r8, %5
-    %endif
-    %if %0 >= 6
-        __PREPARE_ARG r9, %5
-    %endif
-    call %$func
-%endmacro
-
-%macro __REPORT_FAIL 0-*
-    extern print_char
-    extern print_newline
-    extern print_string
-
-    lea rdi, [%%failed_1]
-    call print_string
-    lea rdi, [%$func_name]
-    call print_string
-    mov rdi, '('
-    call print_char
-    lea rdi, [%%args]
-    call print_string
-    mov rdi, ')'
-    call print_char
-
-    %ifdef there_is_got
-        lea rdi, [%%failed_2]
-        call print_string
-        __test_got
-        mov rdi, ','
-    call print_char
-    %endif
-
-    lea rdi, [%%failed_3]
-    call print_string
-    __test_expected
-
-    call print_newline
-
-    __string %%failed_1, "Test failed: "
-    __string %%failed_2, " results in "
-    __string %%failed_3, " expected "
-    __string %%args, %str(%{1:-1})
-%endmacro
-
 %macro EXPECT_NULL 1-*
     __assert_ctx func_test, "EXPECT_NULL should be called between FUNC and DONE"
-    
-    __PREPARE_TEST_CALL %{1:-1}
+
+    __PREPARE_ARGS %{1:-1}
     call %$func
-    
-    test eax, eax
+
+    test rax, rax
     jz %%success
+
+    mov rdi, rax
+    call print_string
+    call print_newline
 
     inc r13
 
     %macro __test_expected 0
-        extern print_string
         lea rdi, [%%expected]
         call print_string
         __string %%expected, "NULL"
@@ -133,10 +73,10 @@
     inc r12
 %endmacro
 
-%macro EXPECT_STR_INDEX 1-*
+%macro EXPECT_STR_INDEX 2-*
     __assert_ctx func_test, "EXPECT_STR_INDEX should be called between FUNC and DONE"
-    
-    __PREPARE_TEST_CALL %{2:-1}
+
+    __PREPARE_ARGS %{2:-1}
     mov r14, rdi
     call %$func
 
@@ -151,14 +91,12 @@
     %define expected %1
 
     %macro __test_got 0
-        extern print_int
-        mov rdi, r14
+                mov rdi, r14
         call print_int
     %endmacro
 
     %macro __test_expected 0
-        extern print_int
-        mov rdi, expected
+                mov rdi, expected
         call print_int
     %endmacro
 
@@ -175,11 +113,9 @@
     inc r12
 %endmacro
 
+; End test. Result is returned in rax; 0: success; 1: failed
 %macro DONE 0
     __assert_ctx func_test, aa
-    extern print_int
-    extern print_newline
-    extern print_string
 
     sub r12, r13
 
@@ -209,13 +145,14 @@
 
     %pop
 
-    %ifctx test
+    %ifctx test_set
         add rbx, rax
     %endif
 %endmacro
 
+; End test set. Result is returned in rax; 0: success; 1: failed
 %macro END_TEST 0
-    __assert_ctx test, "END_TEST should be called after corresponding TEST"
+    __assert_ctx test_set, "END_TEST should be called after corresponding TEST"
 
     xor eax, eax
     test rbx, rbx
@@ -224,4 +161,60 @@
     pop rbx
     pop rbx
     %pop
+%endmacro
+
+%macro __PREPARE_ARG 2
+    %ifstr %2
+        __string %%arg, %2
+        lea %1, [%%arg]
+    %elifid %2
+        lea %1, [%2]
+    %else
+        mov %1, %2
+    %endif
+%endmacro
+
+%macro __PREPARE_ARGS_IMPL 6-12
+    %rep %0 - 6
+    __PREPARE_ARG %1, %7
+    %rotate 1
+    %endrep
+%endmacro
+
+%macro __PREPARE_ARGS 0-6
+    %if %0 != 0
+    __PREPARE_ARGS_IMPL rdi, rsi, rdx, rcx, r8, r9, %{1:-1}
+    %endif
+%endmacro
+
+%macro __REPORT_FAIL 2-*
+    lea rdi, [%%failed_1]
+    call print_string
+    lea rdi, [%$func_name]
+    call print_string
+    mov rdi, '('
+    call print_char
+    lea rdi, [%%args]
+    call print_string
+    mov rdi, ')'
+    call print_char
+
+    %ifdef there_is_got
+        lea rdi, [%%failed_2]
+        call print_string
+        __test_got
+        mov rdi, ','
+    call print_char
+    %endif
+
+    lea rdi, [%%failed_3]
+    call print_string
+    __test_expected
+
+    call print_newline
+
+    __string %%failed_1, "Test failed: "
+    __string %%failed_2, " results in "
+    __string %%failed_3, " expected "
+    __string %%args, %str(%{2:-1})
 %endmacro
