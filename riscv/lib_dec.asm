@@ -22,10 +22,14 @@ div10: # int div10(unsigned int x)
     bne zero, t0, div10_lt_10
     push2 ra, s1
     mv s1, a0
-    srli a0, a0, 2
+    srli a0, a0, 3
     call div10
+    slli a0, a0, 1
     srli t0, s1, 3
     sub a0, t0, a0
+    mul10 t0, a0
+    sltu t0, s1, t0
+    sub a0, a0, t0
     mul10 t0, a0
     sltu t0, s1, t0
     sub a0, a0, t0
