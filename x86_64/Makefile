@@ -22,16 +22,11 @@ build:
 $(LIB): build/%.o:%.nasm $(INCLUDES) | build
 	nasm -f elf64 $(INCLUDES:%=-p %) -Ox -o $@ $<
 
-$(TEST): build/%:%.nasm $(LIB) $(INCLUDES) | build
-	nasm -f elf64 $(INCLUDES:%=-p %) -Ox -o $@.o $<
-	ld -r -e --gc-sections -e main -o $@.pre $@.o $(LIB)
-	gcc -lc -o $@ $@.pre
+$(BIN) $(TEST): build/%:%.nasm $(LIB) $(INCLUDES) | build
+	nasm -f elf64 $(INCLUDES:%=-p %) -Ox -o $@.main.o $<
+	ld -r --gc-sections -e main -o $@.o $@.main.o $(LIB)
+	gcc -lc -o $@ $@.o
 
 $(PASSED): %.passed:% | build
 	@./$<
 	@touch $@
-
-$(BIN): build/%:%.nasm $(LIB) $(INCLUDES) | build
-	nasm -f elf64 $(INCLUDES:%=-p %) -Ox -o $@.o $<
-	ld -r -e --gc-sections -e main -o $@.pre $@.o $(LIB)
-	gcc -lc -o $@ $@.pre
