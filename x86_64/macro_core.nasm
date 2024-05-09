@@ -43,3 +43,30 @@ default rel
     exit -1
     __string %%error, %1
 %endmacro
+
+%macro collect_stack 1-2
+    extern dalloc
+
+    %if %0 == 2
+    lea rdi, %2
+    %else
+    mov rdi, rbp
+    %endif
+    sub rdi, rsp
+    jz %%skip
+    mov %1, rdi
+    shr %1, 3
+    mov rax, rsp
+    and rsp, -16
+    push rax
+    push %1
+    call dalloc
+    pop rcx
+    pop rsp
+    
+    %%loop:
+    pop qword [rax + 8 * rcx - 8]
+    dec rcx
+    jnz %%loop
+    %%skip:
+%endmacro

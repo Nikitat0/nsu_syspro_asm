@@ -24,7 +24,7 @@ main:
     push r12
     push rbp
     mov rbp, rsp
-    
+
     mov rax, [rsi + 8]
     mov rbx, rax ; rbx: char *path
 
@@ -62,8 +62,7 @@ main:
 
     jmp .loop_begin
     .loop:
-    call print_char
-    mov rdi, r12
+    lea rdi, [r12 + 1]
     call print_int
     mov edi, ' '
     call print_char
