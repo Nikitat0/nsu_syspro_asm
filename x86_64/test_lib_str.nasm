@@ -25,4 +25,4 @@ main:
     DONE
 
     END_TEST
-    ret
+ret

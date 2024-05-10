@@ -40,7 +40,7 @@ func clap ; char **clap(char *argv[], size_t *npos_args, options_t *options)
 
     collect_stack qword [rsi]
     pop rbp
-    ret
+ret
     .unknown_option:
     and rsp, -16
     mov [rsp], r10

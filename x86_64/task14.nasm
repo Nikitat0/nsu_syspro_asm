@@ -49,7 +49,7 @@ main:
     movsx eax, al
 
     add rsp, 16
-    ret
+ret
     .print_usage:
     lea rdi, [usage]
     call print_string
@@ -76,7 +76,7 @@ grep_load: ; char *grep_load(char *path, options_t options)
 
     pop rax
     add rsp, 16
-    ret
+ret
 
 grep: ; size_t *grep(char *content, char *pattern, options_t options)
     push rbx
@@ -128,7 +128,7 @@ grep: ; size_t *grep(char *content, char *pattern, options_t options)
     leave
     pop r12
     pop rbx
-    ret
+ret
 
 section .rodata
 usage:

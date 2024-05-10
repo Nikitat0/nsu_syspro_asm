@@ -47,7 +47,7 @@ main:
 
     add rsp, 24
     xor eax, eax
-    ret
+ret
     .print_usage: lea rdi, [usage]
     call print_string
     mov edi, -1

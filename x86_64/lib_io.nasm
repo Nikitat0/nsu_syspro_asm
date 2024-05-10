@@ -14,21 +14,21 @@ func fopen ; int fopen(const char *path, int mode)
     call open wrt ..plt
     test eax, eax
     js .err
-    ret
+ret
     .err perror "fopen"
 
 func fread ; int fread(int fd, void *buf, size_t nbyte)
     call read wrt ..plt
     cmp eax, -1
     jz .err
-    ret
+ret
     .err perror "fread"
 
 func fwrite ; int fwrite(int fd, void *buf, size_t nbyte)
     call write wrt ..plt
     cmp eax, -1
     jz .err
-    ret
+ret
     .err perror "fwrite"
 
 global SEEK_SET, SEEK_CUR, SEEK_END
@@ -40,14 +40,14 @@ func fseek ; int fwrite(int fd, int offset, int whence)
     call lseek wrt ..plt
     cmp eax, -1
     jz .err
-    ret
+ret
     .err perror "fseek"
 
 func fclose ; void close(int fd)
     call close wrt ..plt
     test eax, eax
     jnz .err
-    ret
+ret
     .err perror "fclose"
 
 func flength ; size_t flength(int fd)
@@ -67,7 +67,7 @@ func flength ; size_t flength(int fd)
     call fseek
     pop rax
     add rsp, 16
-    ret
+ret
 
 func fload ; char *fload(int fd)
     push rdi ; [rsp + 8]: int fd
@@ -84,4 +84,4 @@ func fload ; char *fload(int fd)
     call fread
     pop rax
     add rsp, 16
-    ret
+ret

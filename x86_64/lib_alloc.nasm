@@ -4,5 +4,5 @@ func dalloc ; void *dalloc(size_t size)
     call malloc wrt ..plt
     test rax, rax
     jz .err
-    ret 
+ret 
     .err perror "dalloc"

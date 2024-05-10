@@ -9,7 +9,7 @@ func strcpy ; char *strcpy(char *restrict dest, const char *restrict src);
     inc rcx
     test dl, dl
     jnz .loop
-    ret
+ret
 
 func strcmp ; int strcmp(const char *lhs, const char *rhs)
     xor ecx, ecx
@@ -21,7 +21,7 @@ func strcmp ; int strcmp(const char *lhs, const char *rhs)
     inc rcx
     sub eax, edx
     jz .loop
-    ret
+ret
     .lhs_end:
     sub eax, edx
     ret
@@ -34,7 +34,7 @@ func strchr ; const char *strchr(const char *str, char ch)
     inc rdi
     test eax, eax
     jnz .loop
-    ret
+ret
     .found:
     mov rax, rdi
     ret
@@ -57,7 +57,7 @@ func strstr ; const char *strstr(const char *str, const char *substr)
     test al, al
     jnz .loop
     xor eax, eax
-    ret
+ret
     .found:
     mov rax, rdi
     ret
@@ -72,7 +72,7 @@ func lower ; void lower(char *str)
     movzx eax, byte [rdi]
     test eax, eax
     jnz .loop
-    ret
+ret
 
 func splitlines ; char **splitlines(char *str, size_t *nlines)
     push rbp
@@ -96,7 +96,7 @@ func splitlines ; char **splitlines(char *str, size_t *nlines)
 
     collect_stack qword [rsi]
     pop rbp
-    ret
+ret
 
 func atou ; uint64_t atou(const char *)
     mov cl, byte [rdi]
@@ -117,7 +117,7 @@ func atou ; uint64_t atou(const char *)
     mov dl, byte [rdi]
     test dl, dl
     jnz .loop
-    ret
+ret
     .on_empty error "atou: Empty"
     .on_unexpected error "atou: Unexpected character"
     .on_overflow error "atou: Overflow"

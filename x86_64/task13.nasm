@@ -77,7 +77,7 @@ main:
     leave
     pop r12
     pop rbx
-    ret
+ret
     .print_usage: lea rdi, [usage]
     call print_string
     exit -1
