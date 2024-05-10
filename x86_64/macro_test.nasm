@@ -85,6 +85,24 @@
     inc r12
 %endmacro
 
+%macro EXPECT_INT 2-*
+    __assert_ctx func_test, "EXPECT_INT should be called between FUNC and DONE"
+
+    __PREPARE_ARGS %{2:-1}
+    call %$func
+
+    cmp rax, %1
+    je %%success
+
+    inc r13
+    mov r14, rax
+    mov r15, %1
+    __REPORT_FAIL "int", "int", %{2:-1}
+
+    %%success:
+    inc r12
+%endmacro
+
 ; End test. Result is returned in rax; 0: success; 1: failed
 %macro DONE 0
     __assert_ctx func_test, aa
