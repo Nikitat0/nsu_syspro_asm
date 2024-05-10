@@ -22,6 +22,10 @@
     %define %$func %1
     __string %$func_name, %str(%1)
 
+    mov rax, rsp
+    and rsp, -16
+    push rax
+    push rbx
     push r12
     push r13
     push r14
@@ -53,21 +57,9 @@
     test rax, rax
     jz %%success
 
-    mov rdi, rax
-    call print_string
-    call print_newline
-
     inc r13
-
-    %macro __test_expected 0
-        lea rdi, [%%expected]
-        call print_string
-        __string %%expected, "NULL"
-    %endmacro
-
-    __REPORT_FAIL %{1:-1}
-
-    %unmacro __test_expected 0
+    mov r14, rax
+    __REPORT_FAIL "int", "null", %{1:-1}
 
     %%success:
     inc r12
@@ -82,32 +74,12 @@
 
     sub rax, r14
     cmp rax, %1
-    jmp %%success
-
-    mov r14, rax
+    je %%success
 
     inc r13
-
-    %define expected %1
-
-    %macro __test_got 0
-                mov rdi, r14
-        call print_int
-    %endmacro
-
-    %macro __test_expected 0
-                mov rdi, expected
-        call print_int
-    %endmacro
-
-    %define there_is_got
-
-    __REPORT_FAIL %{1:-1}
-
-    %undef there_is_got
-    %undef expected
-    %unmacro __test_got 0
-    %unmacro __test_expected 0
+    mov r14, rax
+    mov r15, %1
+    __REPORT_FAIL "int", "int", %{2:-1}
 
     %%success:
     inc r12
@@ -131,14 +103,14 @@
 
     xor eax, eax
     test r13, r13
-    jz %%success
-    inc eax
-    %%success:
+    setnz al
 
     pop r15
     pop r14
     pop r13
     pop r12
+    pop rbx
+    pop rsp
 
     __string %%done_1, "Passed: "
     __string %%done_2, ", failed: "
@@ -199,22 +171,36 @@
     mov rdi, ')'
     call print_char
 
-    %ifdef there_is_got
-        lea rdi, [%%failed_2]
-        call print_string
-        __test_got
-        mov rdi, ','
+    lea rdi, [%%failed_2]
+    call print_string
+    __TYPED_PRINT %1, r14
+    mov rdi, ','
     call print_char
-    %endif
 
     lea rdi, [%%failed_3]
     call print_string
-    __test_expected
+    __TYPED_PRINT %2, r15
 
     call print_newline
 
     __string %%failed_1, "Test failed: "
     __string %%failed_2, " results in "
     __string %%failed_3, " expected "
-    __string %%args, %str(%{2:-1})
+    __string %%args, %str(%{3:-1})
+%endmacro
+
+%macro __TYPED_PRINT 2
+    %if %1 == "int"
+        mov rdi, %2
+        call print_int
+    %elif %1 == "str"
+        mov rdi, %2
+        call print_string
+    %elif %1 == "null"
+        lea rdi, [%%null]
+        call print_string
+    %else
+        %fatal Unknown fmt: %1
+    %endif
+    __string %%null, "NULL"
 %endmacro
