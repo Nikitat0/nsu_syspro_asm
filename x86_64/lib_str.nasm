@@ -62,6 +62,71 @@ ret
     mov rax, rdi
     ret
 
+func strspn ; size_t strspn(const char *dest, const char *src)
+    xorps xmm0, xmm0
+    movaps [rsp - 40], xmm0
+    movaps [rsp - 24], xmm0
+    ; [rsp - 40]: bits256_t allowed
+
+    .loop_src:
+    movzx ecx, byte [rsi]
+    inc rsi
+    mov edx, ecx
+    xor eax, eax
+    inc eax
+    shl rax, cl
+    shr cl, 6
+    or [rsp + 8 * rcx - 40],  rax
+    test dl, dl
+    jnz .loop_src
+    xor byte [rsp - 40], 1
+
+    xor eax, eax
+    .loop_dest:
+    movzx ecx, byte [rdi]
+    inc rdi
+    xor edx, edx
+    inc edx
+    shl rdx, cl
+    shr cl, 6
+    test [rsp + 8 * rcx - 40], rdx
+    lea rax, [rax + 1]
+    jnz .loop_dest
+    dec rax
+ret
+
+func strcspn ; size_t strcspn(const char *dest, const char *src)
+    xorps xmm0, xmm0
+    movaps [rsp - 40], xmm0
+    movaps [rsp - 24], xmm0
+    ; [rsp - 40]: bits256_t disallowed
+
+    .loop_src:
+    movzx ecx, byte [rsi]
+    inc rsi
+    mov edx, ecx
+    xor eax, eax
+    inc eax
+    shl rax, cl
+    shr cl, 6
+    or [rsp + 8 * rcx - 40],  rax
+    test dl, dl
+    jnz .loop_src
+
+    xor eax, eax
+    .loop_dest:
+    movzx ecx, byte [rdi]
+    inc rdi
+    xor edx, edx
+    inc edx
+    shl rdx, cl
+    shr cl, 6
+    test [rsp + 8 * rcx - 40], rdx
+    lea rax, [rax + 1]
+    jz .loop_dest
+    dec rax
+ret
+
 func lower ; void lower(char *str)
     lea rsi, [lower_table]
     .loop:

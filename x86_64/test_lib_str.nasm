@@ -1,6 +1,8 @@
 section .text
 extern strchr
 extern strstr
+extern strspn
+extern strcspn
 
 global main
 main:
@@ -22,6 +24,19 @@ main:
     EXPECT_STR_INDEX 0, "abc", ""
     EXPECT_STR_INDEX 0, "", ""
     EXPECT_NULL "", "a"
+    DONE
+
+    FUNC strspn
+    EXPECT_INT 3, "foo123", "abcdefghijklmnopqrstuvwxyz"
+    EXPECT_INT 0, "123foo", "abcdefghijklmnopqrstuvwxyz"
+    EXPECT_INT 6, "abcdef", "abcdefabcdef"
+    DONE
+
+    FUNC strcspn
+    EXPECT_INT 0, "foo123", "abcdefghijklmnopqrstuvwxyz"
+    EXPECT_INT 3, "123foo", "abcdefghijklmnopqrstuvwxyz"
+    EXPECT_INT 3, "123", "abcdefghijklmnopqrstuvwxyz"
+    EXPECT_INT 0, "abcdef", "abcdefabcdef"
     DONE
 
     END_TEST
