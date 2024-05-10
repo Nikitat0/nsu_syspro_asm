@@ -4,6 +4,7 @@ extern fopen
 extern fload
 extern fclose
 extern lower
+extern O_RDONLY
 extern print_char
 extern print_int
 extern print_newline
@@ -58,6 +59,7 @@ grep_load: ; char *grep_load(char *path, options_t options)
     push rsi
     sub rsp, 16 ; [rsp + 16] options_t options
 
+    mov rsi, O_RDONLY
     call fopen
     mov [rsp], rax ; [rsp]: int fd
     mov rdi, rax
