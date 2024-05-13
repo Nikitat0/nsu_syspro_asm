@@ -107,6 +107,7 @@ main:
     call print_string
     call print_newline
 
+    xor eax, eax
     leave
 ret
     .print_usage:

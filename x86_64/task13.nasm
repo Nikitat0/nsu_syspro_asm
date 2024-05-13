@@ -74,6 +74,7 @@ main:
     cmp r12, r13
     jne .loop
 
+    xor eax, eax
     leave
     pop r12
     pop rbx
