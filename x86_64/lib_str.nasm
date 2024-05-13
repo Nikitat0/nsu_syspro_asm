@@ -1,5 +1,15 @@
 extern dalloc
 
+func strlen ; size_t strlen(const char *src)
+    mov rax, rdi
+    .loop:
+    test byte [rax], -1
+    lea rax, [rax + 1]
+    jnz .loop
+    sub rax, rdi
+    dec rax
+ret
+
 func strcpy ; char *strcpy(char *restrict dest, const char *restrict src);
     mov rax, rdi
     xor ecx, ecx

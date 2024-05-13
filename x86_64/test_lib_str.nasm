@@ -1,4 +1,5 @@
 section .text
+extern strlen
 extern strchr
 extern strstr
 extern strspn
@@ -7,6 +8,11 @@ extern strcspn
 global main
 main:
     TEST
+
+    FUNC strlen
+    EXPECT_INT 6, "abcdef"
+    EXPECT_INT 0, ""
+    DONE
 
     FUNC strchr
     EXPECT_STR_INDEX 0, "abc", %eval('a')
@@ -37,6 +43,7 @@ main:
     EXPECT_INT 3, "123foo", "abcdefghijklmnopqrstuvwxyz"
     EXPECT_INT 3, "123", "abcdefghijklmnopqrstuvwxyz"
     EXPECT_INT 0, "abcdef", "abcdefabcdef"
+    EXPECT_INT 3, "one word", " "
     DONE
 
     END_TEST
