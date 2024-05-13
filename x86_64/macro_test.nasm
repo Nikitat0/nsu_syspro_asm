@@ -103,6 +103,47 @@
     inc r12
 %endmacro
 
+
+%macro EXPECT_TRUE 1-*
+    __assert_ctx func_test, "EXPECT_TRUE should be called between FUNC and DONE"
+    __PREPARE_ARGS %{1:-1}
+    call %$func
+    test rax, rax
+    jnz %%success
+    inc r13
+    __REPORT_FAIL "false", "true", %{2:-1}
+    %%success:
+    inc r12
+%endmacro
+
+%macro EXPECT_FALSE 1-*
+    __assert_ctx func_test, "EXPECT_FALSE should be called between FUNC and DONE"
+    __PREPARE_ARGS %{1:-1}
+    call %$func
+    test rax, rax
+    jz %%success
+    inc r13
+    __REPORT_FAIL "true", "false", %{2:-1}
+    %%success:
+    inc r12
+%endmacro
+
+%macro EXPECT_STRING 2-*
+    __assert_ctx func_test, "EXPECT_STRING should be called between FUNC and DONE"
+    __PREPARE_ARGS %{2:-1}
+    call %$func
+    mov r15, rax
+    mov rdi, rax
+    lea rsi, [%%expected] 
+    jz %%success
+    inc r13
+    lea r13, [%%expected]
+    __REPORT_FAIL "str", "str", %{2:-1}
+    %%success:
+    inc r12
+    __string %%expected, %1
+%endmacro
+
 ; End test. Result is returned in rax; 0: success; 1: failed
 %macro DONE 0
     __assert_ctx func_test, aa
@@ -154,11 +195,11 @@
 %endmacro
 
 %macro __PREPARE_ARG 2
-    %ifstr %2
+    %ifid %2
+        lea %1, [%2]
+    %elifstr %2
         __string %%arg, %2
         lea %1, [%%arg]
-    %elifid %2
-        lea %1, [%2]
     %else
         mov %1, %2
     %endif
@@ -217,8 +258,16 @@
     %elif %1 == "null"
         lea rdi, [%%null]
         call print_string
+    %elif %1 == "false"
+        lea rdi, [%%false]
+        call print_string
+    %elif %1 == "true"
+        lea rdi, [%%true]
+        call print_string
     %else
         %fatal Unknown fmt: %1
     %endif
     __string %%null, "NULL"
+    __string %%false, "false"
+    __string %%true, "true"
 %endmacro

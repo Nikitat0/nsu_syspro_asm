@@ -1,5 +1,7 @@
 section .text
 extern strlen
+extern strcat
+extern strcmp
 extern strchr
 extern strstr
 extern strspn
@@ -12,6 +14,20 @@ main:
     FUNC strlen
     EXPECT_INT 6, "abcdef"
     EXPECT_INT 0, ""
+    DONE
+
+    FUNC strcmp
+    EXPECT_INT 0, "", ""
+    EXPECT_INT 0, "abcdef", "abcdef"
+    EXPECT_INT %eval(-'a'), "", "abc"
+    EXPECT_INT %eval('a'), "abc", ""
+    EXPECT_INT %eval('a' - 'd'), "abc", "def"
+    DONE
+
+    FUNC strcat
+    EXPECT_STRING "abcdef", strcat_1, "def"
+    EXPECT_STRING "def", strcat_2, "def"
+    EXPECT_STRING "", strcat_3, ""
     DONE
 
     FUNC strchr
@@ -48,3 +64,8 @@ main:
 
     END_TEST
 ret
+
+section .data
+    strcat_1: db "abc", 0, 0, 0, 0
+    strcat_2: db 0, 0, 0, 0
+    strcat_3: db 0

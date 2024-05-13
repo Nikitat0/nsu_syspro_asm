@@ -19,6 +19,20 @@ func strcpy ; char *strcpy(char *restrict dest, const char *restrict src);
     inc rcx
     test dl, dl
     jnz .loop
+    mov rax, rdi
+ret
+
+func strcat ; char *strcat(char *dest, const char *src)
+    push rdi
+
+    dec rdi
+    .loop:
+    inc rdi
+    test byte [rdi], -1
+    jnz .loop
+
+    call strcpy
+    pop rdi
 ret
 
 func strcmp ; int strcmp(const char *lhs, const char *rhs)
@@ -29,11 +43,11 @@ func strcmp ; int strcmp(const char *lhs, const char *rhs)
     test al, al
     jz .lhs_end
     inc rcx
-    sub eax, edx
+    sub rax, rdx
     jz .loop
 ret
     .lhs_end:
-    sub eax, edx
+    sub rax, rdx
     ret
 
 func strchr ; const char *strchr(const char *str, char ch)
