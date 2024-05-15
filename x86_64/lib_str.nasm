@@ -32,7 +32,7 @@ func strcat ; char *strcat(char *dest, const char *src)
     jnz .loop
 
     call strcpy
-    pop rdi
+    pop rax
 ret
 
 func strcmp ; int strcmp(const char *lhs, const char *rhs)

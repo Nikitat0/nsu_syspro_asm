@@ -7,11 +7,11 @@ TEST_SOURCES = $(wildcard test*.nasm)
 LIB = $(LIB_SOURCES:%.nasm=build/%.o)
 BIN = $(BIN_SOURCES:%.nasm=build/%)
 TEST = $(TEST_SOURCES:%.nasm=build/%)
-PASSED = $(TEST:%=%.passed) 
+PASSED = $(TEST:%=%.passed)
 
 all: test $(BIN)
 
-test: $(PASSED)
+test: $(PASSED) build/task16.passed
 
 clean:
 	@rm -rf build bin
@@ -29,4 +29,8 @@ $(BIN) $(TEST): build/%:%.nasm $(LIB) $(INCLUDES) | build
 
 $(PASSED): %.passed:% | build
 	@./$<
+	@touch $@
+
+build/task16.passed: test_task16.py build/task16
+	python3 test_task16.py build/task16 build/to_sort.txt
 	@touch $@
