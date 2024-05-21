@@ -53,8 +53,8 @@ default rel
     mov rdi, rbp
     %endif
     sub rdi, rsp
-    jz %%skip
     mov %1, rdi
+    jz %%skip
     shr %1, 3
     mov rax, rsp
     and rsp, -16

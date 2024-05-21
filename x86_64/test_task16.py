@@ -35,3 +35,10 @@ for _ in range(100):
     assert len(got) == len(lines)
     for i in range(len(lines)):
         assert got[i] == lines[i]
+
+with open(inputf, "w") as f:
+    pass
+status = os.system(f"./{executable} {inputf}")
+assert status == 0
+with open(outputf, "r") as f:
+    assert f.read() == ""

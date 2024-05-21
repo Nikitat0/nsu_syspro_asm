@@ -112,6 +112,8 @@ func fwriteline ; void *fwriteline(int fd, const char *line)
 jmp fwrite
 
 func fwritelines ; void *fwritelines(int fd, const char *lines, size_t nlines)
+    test rdx, rdx
+    jz .skip
     push rbx
     lea rax, [rsi + 8 * rdx]
     push rax
@@ -128,6 +130,7 @@ func fwritelines ; void *fwritelines(int fd, const char *lines, size_t nlines)
 
     add rsp, 8
     pop rbx
+    .skip:
 ret
 
 section .rodata
