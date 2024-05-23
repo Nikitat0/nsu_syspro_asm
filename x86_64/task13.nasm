@@ -22,8 +22,6 @@ main:
 
     push rbx
     push r12
-    push rbp
-    mov rbp, rsp
 
     mov rax, [rsi + 8]
     mov rbx, rax ; rbx: char *path
@@ -49,7 +47,7 @@ main:
     call fclose
 
     mov rdi, rbx
-    lea rsi, [rsp - 16]
+    lea rsi, [rsp - 8]
     mov rsp, rsi
     call splitlines
     mov rbx, rax ; rbx: char *lines[]
@@ -58,7 +56,7 @@ main:
     mov r13, rdi
     sub rdi, r12
     mov r12, 0
-    cmovns r12, rdi
+    cmova r12, rdi
 
     jmp .loop_begin
     .loop:
@@ -75,7 +73,7 @@ main:
     jne .loop
 
     xor eax, eax
-    leave
+    pop r13
     pop r12
     pop rbx
 ret
